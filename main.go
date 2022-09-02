@@ -1,6 +1,7 @@
 package main
 
 import (
+	"KBot/utils/embed"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"io/ioutil"
@@ -47,13 +48,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if command == "!ping" {
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
-		embedResponse, err := s.ChannelMessageSendEmbed(m.ChannelID, pongResponse.ToMessageEmbed())
-		if err != nil {
-			return
-		}
-
-		time.Sleep(5 * time.Second)
-		s.ChannelMessageDelete(m.ChannelID, embedResponse.ID)
+		sendEmbedAndDelete(pongResponse, s, m)
 	}
 
 	if command == "!informations" || command == "!information" || command == "!info" {
@@ -61,30 +56,21 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err != nil {
 			return
 		}
+
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 		members, err := s.GuildMembers(m.GuildID, "", 1000)
-		embedResponse, err := s.ChannelMessageSendEmbed(m.ChannelID, serverInfoResponse.SetDescription(fmt.Sprintf(`Serveur: %s
-Il y a %d membres`, server.Name, len(members))).ToMessageEmbed())
-		_, err = embedResponse, err
 		if err != nil {
 			return
 		}
 
-		time.Sleep(5 * time.Second)
-		s.ChannelMessageDelete(m.ChannelID, embedResponse.ID)
+		sendEmbedAndDelete(serverInfoResponse.SetDescription(fmt.Sprintf(`Serveur: %s
+Il y a %d membres`, server.Name, len(members))), s, m)
 	}
 
 	if command == "!latence" {
 		var latencyValue = s.HeartbeatLatency()
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
-		//Round latencyValue
-		embedResponse, err := s.ChannelMessageSendEmbed(m.ChannelID, latencyResponse.SetDescription(fmt.Sprintf("Latence: %d ms", latencyValue.Milliseconds())).ToMessageEmbed())
-		if err != nil {
-			return
-		}
-
-		time.Sleep(5 * time.Second)
-		s.ChannelMessageDelete(m.ChannelID, embedResponse.ID)
+		sendEmbedAndDelete(latencyResponse.SetDescription(fmt.Sprintf("Latence: %d ms", latencyValue.Milliseconds())), s, m)
 	}
 
 	if command == "!clear" {
@@ -124,13 +110,37 @@ Il y a %d membres`, server.Name, len(members))).ToMessageEmbed())
 		}
 
 		s.ChannelMessagesBulkDelete(m.ChannelID, messagesId)
-		embedClearSuccess, err := s.ChannelMessageSendEmbed(m.ChannelID, clearSuccess.ToMessageEmbed())
-		if err != nil {
+		sendEmbedAndDelete(clearSuccess, s, m)
+	}
+
+	if command == "!kick" {
+		if len(args) == 0 {
+			s.ChannelMessageSendEmbed(m.ChannelID, kickNoUserDefine.ToMessageEmbed())
 			return
 		}
 
-		time.Sleep(5 * time.Second)
-		s.ChannelMessageDelete(m.ChannelID, embedClearSuccess.ID)
+		if len(args) > 1 {
+			sendEmbedAndDelete(commandSyntaxe, s, m)
+			return
+		}
+
+		if len(m.Mentions) == 0 || len(m.Mentions) > 1 {
+			sendEmbedAndDelete(commandSyntaxe, s, m)
+		}
+
+		var memberToKick = m.Mentions[0]
+		s.GuildMemberDelete(m.GuildID, memberToKick.ID)
+		sendEmbedAndDelete(memberKicked, s, m)
 	}
 
+}
+
+func sendEmbedAndDelete(embed *embed.Embed, s *discordgo.Session, m *discordgo.MessageCreate) {
+	sendEmbed, err := s.ChannelMessageSendEmbed(m.ChannelID, embed.ToMessageEmbed())
+	if err != nil {
+		return
+	}
+
+	time.Sleep(5 * time.Second)
+	s.ChannelMessageDelete(m.ChannelID, sendEmbed.ID)
 }
