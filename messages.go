@@ -5,8 +5,16 @@ import (
 )
 
 var iconUrl = "https://kstars.me/public/images/kstars.png"
+var baseEmbed = embed.New().SetColor(embed.BLUE_LIGHT).SetDefaultFooter().SetAuthor("KBot.go", "", "")
 
 //Ping Command
-var pongResponse = embed.New().SetDescription("Pong!").SetAuthor("KBot.go", iconUrl, "").SetColor(embed.BLUE_LIGHT).SetDefaultFooter().SetImage(iconUrl).ToMessageEmbed()
+var pongResponse = baseEmbed.SetDescription("Pong!")
 
-var serverInfoResponse = embed.New().SetColor(embed.BLUE_LIGHT).SetDefaultFooter().SetAuthor("KBot.go", iconUrl, "").SetImage(iconUrl)
+//ServerInfo Command
+var serverInfoResponse = baseEmbed
+
+//Latency Command
+var latencyResponse = baseEmbed
+
+//Clear Command
+var clearSuccess = baseEmbed.SetDescription("Messages supprimés !")
