@@ -22,6 +22,11 @@ func MemberJoin(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 		SetDescription(fmt.Sprintf("Bienvenue à %s ! \nNous sommes désormais %d", m.User.Username, len(members))).
 		SetTitle("Nouveau membre:").
 		ToMessageEmbed())
+
+	s.ChannelEdit("1015680054103117956", &discordgo.ChannelEdit{
+		Name:     fmt.Sprintf("Membres: %d", len(members)),
+		ParentID: "1010346801188053022",
+	})
 }
 
 func MemberQuit(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
@@ -39,4 +44,9 @@ func MemberQuit(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
 		SetDescription(fmt.Sprintf("%s nous a quitté ! \nNous sommes désormais %d", m.User.Username, len(members))).
 		SetTitle("A quitter le serveur:").
 		ToMessageEmbed())
+
+	s.ChannelEdit("1015680054103117956", &discordgo.ChannelEdit{
+		Name:     fmt.Sprintf("Membres: %d", len(members)),
+		ParentID: "1010346801188053022",
+	})
 }
