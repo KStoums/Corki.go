@@ -29,3 +29,6 @@ var MemberKicked = embed.New().SetColor(embed.CYAN).SetDefaultFooter().SetDescri
 //Note Command
 var NoNoteDefine = embed.New().SetColor(embed.CYAN).SetDefaultFooter().SetDescription("Vous devez entrer une note.").SetTitle("Erreur:")
 var NoteResponse = embed.New().SetColor(embed.RED_DARK).SetDefaultFooter().SetTitle("Note:")
+
+//Welcome Message
+var WelcomeMessage = embed.New().SetColor(embed.CYAN).SetDefaultFooter()

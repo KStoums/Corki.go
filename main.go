@@ -2,14 +2,25 @@ package main
 
 import (
 	"KBot/commands"
+	"KBot/events"
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"io/ioutil"
 	"os"
-	"strings"
-	"sync"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
+	forever := make(chan bool, 1)
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM))
+	go func() {
+		<-signalChan
+		fmt.Println("Le programme s'arrête")
+		forever <- true
+	}()
+
 	file, err := os.Open(botToken)
 	if err != nil {
 		panic(err)
@@ -25,30 +36,16 @@ func main() {
 		panic(err)
 	}
 
-	discord.AddHandler(messageCreate)
+	defer discord.Close()
+
+	discord.AddHandler(events.MessageCreate)
+	discord.AddHandler(events.MemberJoin)
+	discord.AddHandler(events.MemberQuit)
+
 	commands.AddCommand(commands.LatencyCommand{}, commands.PingCommand{}, commands.ServerInfoCommand{},
 		commands.ClearCommand{}, commands.KickCommand{}, commands.BanCommand{}, commands.NoteCommand{})
 
 	discord.Identify.Intents = discordgo.IntentsAll
-	group := sync.WaitGroup{}
-	group.Add(1)
 	discord.Open()
-	group.Wait()
-}
-
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-
-	args := strings.Split(m.Content, " ")
-	command := args[0]
-	args = args[1:]
-
-	for _, c := range commands.Commands {
-		if "!"+c.Name() == command {
-			c.Run(s, m, args)
-			break
-		}
-	}
+	<-forever
 }
