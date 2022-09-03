@@ -4,7 +4,7 @@ import (
 	"KBot/utils/embed"
 )
 
-var iconUrl = "https://kstars.me/public/images/kstars.png"
+var IconUrl = "https://kstars.me/public/images/kstars.png"
 
 //General
 var CommandSyntaxe = embed.New().SetColor(embed.CYAN).SetDefaultFooter().SetDescription("Syntaxe incorrect. Tapez !help pour plus d'informations.").SetTitle("Erreur:")
@@ -13,7 +13,7 @@ var CommandSyntaxe = embed.New().SetColor(embed.CYAN).SetDefaultFooter().SetDesc
 var PongResponse = embed.New().SetColor(embed.CYAN).SetDefaultFooter().SetDescription("Pong!").SetTitle("Requête Ping:")
 
 //ServerInfo Command
-var ServerInfoResponse = embed.New().SetColor(embed.CYAN).SetDefaultFooter().SetTitle("Informations:").SetImage(iconUrl)
+var ServerInfoResponse = embed.New().SetColor(embed.CYAN).SetDefaultFooter().SetTitle("Informations:").SetImage(IconUrl)
 
 //Latency Command
 var LatencyResponse = embed.New().SetColor(embed.CYAN).SetDefaultFooter().SetTitle("Latence:")

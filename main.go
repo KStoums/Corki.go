@@ -5,7 +5,6 @@ import (
 	"KBot/events"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"io/ioutil"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,17 +20,7 @@ func main() {
 		forever <- true
 	}()
 
-	file, err := os.Open(botToken)
-	if err != nil {
-		panic(err)
-	}
-
-	bytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		panic(err)
-	}
-
-	discord, err := discordgo.New("Bot " + string(bytes))
+	discord, err := discordgo.New("Bot " + os.Getenv("TOKEN"))
 	if err != nil {
 		panic(err)
 	}
@@ -43,12 +32,13 @@ func main() {
 	discord.AddHandler(events.MemberQuit)
 	discord.AddHandler(events.ChannelCreate)
 	discord.AddHandler(events.RawEvent)
+	discord.AddHandler(events.Ready)
 
 	commands.AddCommand(commands.LatencyCommand{}, commands.PingCommand{}, commands.ServerInfoCommand{},
 		commands.ClearCommand{}, commands.KickCommand{}, commands.BanCommand{}, commands.NoteCommand{})
 
 	discord.Identify.Intents = discordgo.IntentsAll
-	discord.Open()
+	err = discord.Open()
 	fmt.Println("> KBot.go started !")
 	<-forever
 }
