@@ -4,6 +4,7 @@ import (
 	"KBot/messages"
 	"KBot/utils/embed"
 	"github.com/bwmarrin/discordgo"
+	"github.com/thoas/go-funk"
 	"strings"
 )
 
@@ -11,6 +12,10 @@ type NoteCommand struct {
 }
 
 func (n NoteCommand) Run(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
+	if !funk.ContainsString(m.Member.Roles, "1010346312459358269") {
+		return
+	}
+
 	if len(args) == 0 {
 		embed.SendEmbedAndDelete(messages.NoNoteDefine, s, m)
 		return

@@ -4,12 +4,17 @@ import (
 	"KBot/messages"
 	"KBot/utils/embed"
 	"github.com/bwmarrin/discordgo"
+	"github.com/thoas/go-funk"
 )
 
 type KickCommand struct {
 }
 
 func (k KickCommand) Run(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
+	if !funk.ContainsString(m.Member.Roles, "1010346312459358269") {
+		return
+	}
+
 	if len(args) == 0 {
 		s.ChannelMessageSendEmbed(m.ChannelID, messages.KickNoUserDefine.ToMessageEmbed())
 		return

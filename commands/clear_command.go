@@ -4,6 +4,7 @@ import (
 	"KBot/messages"
 	"KBot/utils/embed"
 	"github.com/bwmarrin/discordgo"
+	"github.com/thoas/go-funk"
 	"strconv"
 )
 
@@ -11,6 +12,10 @@ type ClearCommand struct {
 }
 
 func (c ClearCommand) Run(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
+	if !funk.ContainsString(m.Member.Roles, "1010346312459358269") {
+		return
+	}
+
 	s.ChannelMessageDelete(m.ChannelID, m.ID)
 	if len(args) == 0 {
 		embed.SendEmbedAndDelete(messages.NoIntDefineToClear, s, m)
