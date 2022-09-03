@@ -2,6 +2,7 @@ package main
 
 import (
 	"KBot/utils/embed"
+	"KBot/utils/emoji"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"io/ioutil"
@@ -47,11 +48,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	args = args[1:]
 
 	if command == "!ping" {
+		fmt.Println("ping", args)
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 		sendEmbedAndDelete(pongResponse, s, m)
+		return
 	}
 
 	if command == "!informations" || command == "!information" || command == "!info" {
+		fmt.Println("informations", args)
 		var server, err = s.Guild(m.GuildID)
 		if err != nil {
 			return
@@ -65,17 +69,22 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		sendEmbedAndDelete(serverInfoResponse.SetDescription(fmt.Sprintf(`Serveur: %s
 Il y a %d membres`, server.Name, len(members))), s, m)
+		return
 	}
 
 	if command == "!latence" {
+		fmt.Println("latence", args)
 		var latencyValue = s.HeartbeatLatency()
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 		sendEmbedAndDelete(latencyResponse.SetDescription(fmt.Sprintf("Latence: %d ms", latencyValue.Milliseconds())), s, m)
+		return
 	}
 
 	if command == "!clear" {
+		fmt.Println("clear", args)
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 		if len(args) == 0 {
+			sendEmbedAndDelete(noIntDefineToClear, s, m)
 			return
 		}
 
@@ -111,9 +120,11 @@ Il y a %d membres`, server.Name, len(members))), s, m)
 
 		s.ChannelMessagesBulkDelete(m.ChannelID, messagesId)
 		sendEmbedAndDelete(clearSuccess, s, m)
+		return
 	}
 
 	if command == "!kick" {
+		fmt.Println("kick", args)
 		if len(args) == 0 {
 			s.ChannelMessageSendEmbed(m.ChannelID, kickNoUserDefine.ToMessageEmbed())
 			return
@@ -126,11 +137,33 @@ Il y a %d membres`, server.Name, len(members))), s, m)
 
 		if len(m.Mentions) == 0 || len(m.Mentions) > 1 {
 			sendEmbedAndDelete(commandSyntaxe, s, m)
+			return
 		}
 
 		var memberToKick = m.Mentions[0]
 		s.GuildMemberDelete(m.GuildID, memberToKick.ID)
 		sendEmbedAndDelete(memberKicked, s, m)
+		return
+	}
+
+	if command == "!note" {
+		fmt.Println("note", args)
+		if len(args) == 0 {
+			sendEmbedAndDelete(noNoteDefine, s, m)
+			return
+		}
+
+		channelId, err := s.Channel("1014890741853589537")
+		if err != nil {
+			return
+		}
+
+		noteEmbed, err := s.ChannelMessageSendEmbed(channelId.ID, noteResponse.SetDescription(strings.Join(args, " ")).SetTitle("Note:").SetColor(embed.RED_DARK).ToMessageEmbed())
+		if err != nil {
+			return
+		}
+
+		err = s.MessageReactionAdd(m.ChannelID, noteEmbed.ID, emoji.ConvertEmoji("📤"))
 	}
 
 }
