@@ -48,14 +48,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	args = args[1:]
 
 	if command == "!ping" {
-		fmt.Println("ping", args)
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 		sendEmbedAndDelete(pongResponse, s, m)
 		return
 	}
 
 	if command == "!informations" || command == "!information" || command == "!info" {
-		fmt.Println("informations", args)
 		var server, err = s.Guild(m.GuildID)
 		if err != nil {
 			return
@@ -68,12 +66,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		sendEmbedAndDelete(serverInfoResponse.SetDescription(fmt.Sprintf(`Serveur: %s
-Il y a %d membres`, server.Name, len(members))), s, m)
+Membres: %d`, server.Name, len(members))), s, m)
 		return
 	}
 
 	if command == "!latence" {
-		fmt.Println("latence", args)
 		var latencyValue = s.HeartbeatLatency()
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 		sendEmbedAndDelete(latencyResponse.SetDescription(fmt.Sprintf("Latence: %d ms", latencyValue.Milliseconds())), s, m)
@@ -81,7 +78,6 @@ Il y a %d membres`, server.Name, len(members))), s, m)
 	}
 
 	if command == "!clear" {
-		fmt.Println("clear", args)
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
 		if len(args) == 0 {
 			sendEmbedAndDelete(noIntDefineToClear, s, m)
@@ -124,7 +120,6 @@ Il y a %d membres`, server.Name, len(members))), s, m)
 	}
 
 	if command == "!kick" {
-		fmt.Println("kick", args)
 		if len(args) == 0 {
 			s.ChannelMessageSendEmbed(m.ChannelID, kickNoUserDefine.ToMessageEmbed())
 			return
@@ -147,7 +142,6 @@ Il y a %d membres`, server.Name, len(members))), s, m)
 	}
 
 	if command == "!note" {
-		fmt.Println("note", args)
 		if len(args) == 0 {
 			sendEmbedAndDelete(noNoteDefine, s, m)
 			return
@@ -158,7 +152,7 @@ Il y a %d membres`, server.Name, len(members))), s, m)
 			return
 		}
 
-		noteEmbed, err := s.ChannelMessageSendEmbed(channelId.ID, noteResponse.SetDescription(strings.Join(args, " ")).SetTitle("Note:").SetColor(embed.RED_DARK).ToMessageEmbed())
+		noteEmbed, err := s.ChannelMessageSendEmbed(channelId.ID, noteResponse.SetDescription(strings.Join(args, " ")).ToMessageEmbed())
 		if err != nil {
 			return
 		}
