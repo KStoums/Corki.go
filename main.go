@@ -17,7 +17,7 @@ func main() {
 	signal.Notify(signalChan, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM))
 	go func() {
 		<-signalChan
-		fmt.Println("Le programme s'arrête")
+		fmt.Println("KBot.go down")
 		forever <- true
 	}()
 
