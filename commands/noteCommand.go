@@ -3,7 +3,6 @@ package commands
 import (
 	"KBot/messages"
 	"KBot/utils/embed"
-	"KBot/utils/emoji"
 	"github.com/bwmarrin/discordgo"
 	"strings"
 )
@@ -27,7 +26,8 @@ func (n NoteCommand) Run(s *discordgo.Session, m *discordgo.MessageCreate, args 
 		return
 	}
 
-	err = s.MessageReactionAdd(m.ChannelID, noteEmbed.ID, emoji.ConvertEmoji("📤"))
+	s.ChannelMessageDelete(m.ChannelID, m.ID)
+	s.MessageReactionAdd(channelId.ID, noteEmbed.ID, "📤")
 }
 
 func (n NoteCommand) Name() string {
