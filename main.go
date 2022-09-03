@@ -17,7 +17,7 @@ func main() {
 	signal.Notify(signalChan, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM))
 	go func() {
 		<-signalChan
-		fmt.Println("KBot.go down")
+		fmt.Println("> KBot.go down")
 		forever <- true
 	}()
 
@@ -41,11 +41,13 @@ func main() {
 	discord.AddHandler(events.MessageCreate)
 	discord.AddHandler(events.MemberJoin)
 	discord.AddHandler(events.MemberQuit)
+	discord.AddHandler(events.ChannelCreate)
 
 	commands.AddCommand(commands.LatencyCommand{}, commands.PingCommand{}, commands.ServerInfoCommand{},
 		commands.ClearCommand{}, commands.KickCommand{}, commands.BanCommand{}, commands.NoteCommand{})
 
 	discord.Identify.Intents = discordgo.IntentsAll
 	discord.Open()
+	fmt.Println("> KBot.go started !")
 	<-forever
 }
