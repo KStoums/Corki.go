@@ -42,6 +42,7 @@ func main() {
 	discord.AddHandler(events.MemberJoin)
 	discord.AddHandler(events.MemberQuit)
 	discord.AddHandler(events.ChannelCreate)
+	discord.AddHandler(events.RawEvent)
 
 	commands.AddCommand(commands.LatencyCommand{}, commands.PingCommand{}, commands.ServerInfoCommand{},
 		commands.ClearCommand{}, commands.KickCommand{}, commands.BanCommand{}, commands.NoteCommand{})
