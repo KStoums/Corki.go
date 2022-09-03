@@ -141,6 +141,28 @@ Membres: %d`, server.Name, len(members))), s, m)
 		return
 	}
 
+	if command == "!!ban" {
+		if len(args) == 0 {
+			s.ChannelMessageSendEmbed(m.ChannelID, kickNoUserDefine.ToMessageEmbed())
+			return
+		}
+
+		if len(args) > 1 {
+			sendEmbedAndDelete(commandSyntaxe, s, m)
+			return
+		}
+
+		if len(m.Mentions) == 0 || len(m.Mentions) > 1 {
+			sendEmbedAndDelete(commandSyntaxe, s, m)
+			return
+		}
+
+		var memberToKick = m.Mentions[0]
+		s.GuildBan(m.GuildID, memberToKick.ID)
+		sendEmbedAndDelete(memberKicked, s, m)
+		return
+	}
+
 	if command == "!note" {
 		if len(args) == 0 {
 			sendEmbedAndDelete(noNoteDefine, s, m)
